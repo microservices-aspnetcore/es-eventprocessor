@@ -11,6 +11,9 @@ namespace StatlerWaldorfCorp.EventProcessor.Location
             return (Math.PI / 180) * angle;
         }
 
+        /*
+         * Returns the distance between two GPS coordinates in kilometers.         
+         */
         public double DistanceBetweenPoints(GpsCoordinate point1, GpsCoordinate point2)
         {            
             double distance = 0.0;
