@@ -1,4 +1,5 @@
 using System;
+using Newtonsoft.Json;
 using StatlerWaldorfCorp.EventProcessor.Location;
 
 namespace StatlerWaldorfCorp.EventProcessor.Events
@@ -11,5 +12,9 @@ namespace StatlerWaldorfCorp.EventProcessor.Events
         public GpsCoordinate SourceMemberLocation { get; set; }
         public GpsCoordinate TargetMemberLocation { get; set; }
         public double MemberDistance { get; set; }
+
+         public string toJson() {
+            return JsonConvert.SerializeObject(this);
+        }
     }
 }

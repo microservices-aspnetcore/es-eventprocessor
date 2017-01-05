@@ -1,12 +1,25 @@
-﻿using System;
+﻿using System.IO;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 
-namespace ConsoleApplication
+namespace StatlerWaldorfCorp.EventProcessor
 {
     public class Program
     {
         public static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            IConfiguration config = new ConfigurationBuilder()
+ 				.AddCommandLine(args)
+				.Build();
+
+	    	var host = new WebHostBuilder()
+				.UseKestrel()
+				.UseStartup<Startup>()
+				.UseContentRoot(Directory.GetCurrentDirectory())
+				.UseConfiguration(config)
+				.Build();
+
+	    	host.Run();
         }
     }
 }
