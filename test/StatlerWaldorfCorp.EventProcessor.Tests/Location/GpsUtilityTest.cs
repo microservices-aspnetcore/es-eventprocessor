@@ -2,7 +2,7 @@ using System;
 using StatlerWaldorfCorp.EventProcessor.Location;
 using Xunit;
 
-namespace StatlerWaldorfCorp.EventProcessor.Tests
+namespace StatlerWaldorfCorp.EventProcessor.Tests.Location
 {
     public class GpsUtilityTest
     {

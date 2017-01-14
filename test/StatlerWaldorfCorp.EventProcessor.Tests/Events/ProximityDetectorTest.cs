@@ -3,13 +3,14 @@ using System;
 using System.Collections.Generic;
 using StatlerWaldorfCorp.EventProcessor.Location;
 using StatlerWaldorfCorp.EventProcessor.Events;
+using StatlerWaldorfCorp.EventProcessor.Tests.Location;
 
-namespace StatlerWaldorfCorp.EventProcessor.Tests
+namespace StatlerWaldorfCorp.EventProcessor.Tests.Events
 {
     public class ProximityDetectorTest
     {
         [Fact]
-        public void EventProcessorDetectsTeamMemberProximities()
+        public void ProximityDetectorDetectsTeamMemberProximities()
         {
             List<MemberLocation> laMetro = new List<MemberLocation>();
             laMetro.Add(new MemberLocation() {
@@ -43,7 +44,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Tests
         }
 
         [Fact]
-        public void EventProcessorReturnsNoEventsForEmptyTeam()
+        public void ProximityDetectorReturnsNoEventsForEmptyTeam()
         {
             List<MemberLocation> noLocations = new List<MemberLocation>();
 
