@@ -13,41 +13,33 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
     public class AMQPEventSubscriber : IEventSubscriber
     {
         private ILogger logger;
-        
-        private IConnection connection;
-
-        private IConnectionFactory connectionFactory;
         private EventingBasicConsumer consumer;
         private QueueOptions queueOptions;
         private string consumerTag;
         private IModel channel;
 
-        public AMQPEventSubscriber(ILogger<AMQPEventSubscriber> logger,
-            IOptions<CloudFoundryServicesOptions> cfOptions,
-            IOptions<QueueOptions> queueOptions,
-            IConnectionFactory connectionFactory) 
+        public AMQPEventSubscriber(ILogger<AMQPEventSubscriber> logger,            
+            IOptions<QueueOptions> queueOptions,            
+            EventingBasicConsumer consumer) 
         {
-            this.logger = logger;
-            this.connectionFactory = connectionFactory;
+            this.logger = logger;            
             this.queueOptions = queueOptions.Value;
+            this.consumer = consumer;
+
+            this.channel = consumer.Model;
 
             Initialize();             
         }
 
         private void Initialize()
-        {
-            connection = connectionFactory.CreateConnection();
-            channel = connection.CreateModel();
-
+        {            
             channel.QueueDeclare(
                 queue: queueOptions.MemberLocationRecordedEventQueueName,
                 durable: false,
                 exclusive: false,
                 autoDelete: false,
                 arguments: null
-            );
-
-            consumer = new EventingBasicConsumer(channel);
+            );            
 
             consumer.Received += (ch, ea) => {
                 var body = ea.Body;
@@ -57,7 +49,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
                 if (MemberLocationRecordedEventReceived != null) {
                     MemberLocationRecordedEventReceived(evt);
                 }
-                ((IModel)ch).BasicAck(ea.DeliveryTag, false);
+                channel.BasicAck(ea.DeliveryTag, false);
             };
         }
         
