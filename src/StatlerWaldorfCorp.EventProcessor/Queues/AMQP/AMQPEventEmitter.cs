@@ -1,32 +1,23 @@
-using System;
+
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StatlerWaldorfCorp.EventProcessor.Events;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Linq;
 using RabbitMQ.Client;
 using System.Text;
 
 namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 {
-    public class AMQPEventEmitter : IEventEmitter
+    public class AMQPEventEmitter : AMQPClientBase, IEventEmitter
     {
         private ILogger<AMQPEventEmitter> logger;
-        private Service rabbitServiceBinding;
-
-        private ConnectionFactory connectionFactory;
-
-        private QueueOptions queueOptions;
+       
         
         public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,
             IOptions<CloudFoundryServicesOptions> cfOptions,
-            IOptions<QueueOptions> queueOptions)
+            IOptions<QueueOptions> queueOptions) : base(cfOptions, queueOptions)
         {         
-            this.logger = logger;            
-            this.rabbitServiceBinding = cfOptions.Value.Services.FirstOrDefault( s => s.Name == "rabbitmq");
-            this.queueOptions = queueOptions.Value;
-
-            connectionFactory = InitializeConnectionFactory();
+            this.logger = logger;                        
 
             logger.LogInformation($"Emitting events on queue {this.queueOptions.ProximityDetectedEventQueueName}");
             logger.LogInformation($"AMQP Connection configured for URI : {rabbitServiceBinding.Credentials["uri"].Value}");
@@ -54,19 +45,6 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
                     logger.LogInformation($"Emitted proximity event of {jsonPayload.Length} bytes to queue.");
                 }
             }
-        }
-
-        private ConnectionFactory InitializeConnectionFactory()
-        {
-            var factory = new ConnectionFactory();
-            
-            factory.UserName = rabbitServiceBinding.Credentials["username"].Value;
-            factory.Password = rabbitServiceBinding.Credentials["password"].Value;
-            factory.VirtualHost = rabbitServiceBinding.Credentials["vhost"].Value;
-            factory.HostName = rabbitServiceBinding.Credentials["hostname"].Value;
-            factory.Uri = rabbitServiceBinding.Credentials["uri"].Value;
-
-            return factory;
-        }
+        }      
     }
 }
