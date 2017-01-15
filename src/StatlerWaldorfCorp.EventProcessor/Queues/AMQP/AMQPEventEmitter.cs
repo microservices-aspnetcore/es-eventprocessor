@@ -16,8 +16,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 
         private QueueOptions queueOptions;
         
-        public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,
-            IOptions<CloudFoundryServicesOptions> cfOptions,            
+        public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,            
             IOptions<QueueOptions> queueOptions,
             IConnectionFactory connectionFactory) 
         {         
