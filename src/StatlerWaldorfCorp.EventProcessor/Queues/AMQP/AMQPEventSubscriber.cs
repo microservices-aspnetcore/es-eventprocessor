@@ -39,7 +39,8 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
                 exclusive: false,
                 autoDelete: false,
                 arguments: null
-            );            
+            );    
+            logger.LogInformation($"Initialized event subscriber for queue {queueOptions.MemberLocationRecordedEventQueueName}");        
 
             consumer.Received += (ch, ea) => {
                 var body = ea.Body;
@@ -57,12 +58,14 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 
         public void Subscribe()
         {
-            consumerTag = channel.BasicConsume(queueOptions.MemberLocationRecordedEventQueueName, false, consumer);       
+            consumerTag = channel.BasicConsume(queueOptions.MemberLocationRecordedEventQueueName, false, consumer);
+            logger.LogInformation("Subscribed to queue.");
         }
 
         public void Unsubscribe()
         {
             channel.BasicCancel(consumerTag);
+            logger.LogInformation("Unsubscribed from queue.");
         }
     }
 }

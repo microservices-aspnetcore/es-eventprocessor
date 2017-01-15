@@ -4,10 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using StatlerWaldorfCorp.EventProcessor.Events;
+using StatlerWaldorfCorp.EventProcessor.Location;
+using StatlerWaldorfCorp.EventProcessor.Location.Redis;
 using StatlerWaldorfCorp.EventProcessor.Queues;
 using StatlerWaldorfCorp.EventProcessor.Queues.AMQP;
 using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using Steeltoe.CloudFoundry.Connector.Redis;
 
 namespace StatlerWaldorfCorp.EventProcessor
 {
@@ -37,17 +42,28 @@ namespace StatlerWaldorfCorp.EventProcessor
             services.Configure<CloudFoundryApplicationOptions>(Configuration);
             services.Configure<CloudFoundryServicesOptions>(Configuration);            
 
+            services.AddDistributedRedisCache(Configuration);
+            services.AddRedisConnectionMultiplexer(Configuration);
+
             services.Configure<QueueOptions>(Configuration.GetSection("QueueOptions"));
             services.AddTransient(typeof(IConnectionFactory), typeof(AMQPConnectionFactory));
+            services.AddTransient(typeof(EventingBasicConsumer), typeof(AMQPEventingConsumer));
+            services.AddTransient(typeof(ILocationCache), typeof(RedisLocationCache));
+
+            services.AddSingleton(typeof(IEventSubscriber), typeof(AMQPEventSubscriber));            
             services.AddSingleton(typeof(IEventEmitter), typeof(AMQPEventEmitter));            
+            services.AddSingleton(typeof(IEventProcessor), typeof(MemberLocationEventProcessor));
         }
 
         public void Configure(IApplicationBuilder app, 
                 IHostingEnvironment env, 
                 ILoggerFactory loggerFactory,
+                IEventSubscriber subscriber,
                 IEventEmitter eventEmitter) 
         {                                   
             app.UseMvc();
+
+            subscriber.Subscribe();
         }
     }
 }
