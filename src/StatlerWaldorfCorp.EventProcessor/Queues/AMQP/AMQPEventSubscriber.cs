@@ -10,21 +10,26 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 {
-    public class AMQPEventSubscriber : AMQPClientBase, IEventSubscriber
+    public class AMQPEventSubscriber : IEventSubscriber
     {
         private ILogger logger;
         
         private IConnection connection;
 
+        private IConnectionFactory connectionFactory;
         private EventingBasicConsumer consumer;
+        private QueueOptions queueOptions;
         private string consumerTag;
         private IModel channel;
 
         public AMQPEventSubscriber(ILogger<AMQPEventSubscriber> logger,
             IOptions<CloudFoundryServicesOptions> cfOptions,
-            IOptions<QueueOptions> queueOptions) : base(cfOptions, queueOptions)
+            IOptions<QueueOptions> queueOptions,
+            IConnectionFactory connectionFactory) 
         {
             this.logger = logger;
+            this.connectionFactory = connectionFactory;
+            this.queueOptions = queueOptions.Value;
 
             Initialize();             
         }

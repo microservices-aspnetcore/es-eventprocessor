@@ -8,19 +8,24 @@ using System.Text;
 
 namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 {
-    public class AMQPEventEmitter : AMQPClientBase, IEventEmitter
+    public class AMQPEventEmitter : IEventEmitter
     {
         private ILogger<AMQPEventEmitter> logger;
        
+        private IConnectionFactory connectionFactory;
+
+        private QueueOptions queueOptions;
         
         public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,
-            IOptions<CloudFoundryServicesOptions> cfOptions,
-            IOptions<QueueOptions> queueOptions) : base(cfOptions, queueOptions)
+            IOptions<CloudFoundryServicesOptions> cfOptions,            
+            IOptions<QueueOptions> queueOptions,
+            IConnectionFactory connectionFactory) 
         {         
-            this.logger = logger;                        
+            this.logger = logger;
+            this.connectionFactory = connectionFactory;                        
+            this.queueOptions = queueOptions.Value;
 
-            logger.LogInformation($"Emitting events on queue {this.queueOptions.ProximityDetectedEventQueueName}");
-            logger.LogInformation($"AMQP Connection configured for URI : {rabbitServiceBinding.Credentials["uri"].Value}");
+            logger.LogInformation($"Emitting events on queue {this.queueOptions.ProximityDetectedEventQueueName}");            
         }
 
         public void EmitProximityDetectedEvent(ProximityDetectedEvent proximityDetectedEvent)
