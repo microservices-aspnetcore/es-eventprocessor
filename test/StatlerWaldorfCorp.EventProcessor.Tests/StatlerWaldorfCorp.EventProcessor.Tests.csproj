@@ -29,6 +29,9 @@
     </PackageReference>
     <PackageReference Include="xunit.runner.visualstudio">
       <Version>2.2.0-beta4-build1194</Version>
+    </PackageReference>    
+    <PackageReference Include="Moq">
+      <Version>4.6.36-*</Version>
     </PackageReference>
   </ItemGroup>
 
