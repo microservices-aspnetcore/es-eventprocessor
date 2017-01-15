@@ -27,6 +27,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Tests.Queues.AMQP
             var connection = new Mock<IConnection>();
             var model = new Mock<IModel>();
 
+            // Ensure that we call basic publish on the appropriate queue name (routing key)
             model.Setup( m => m.BasicPublish(It.IsAny<string>(), 
                         It.Is<string>( rk => rk == queueOptions.ProximityDetectedEventQueueName),
                         It.IsAny<bool>(), 
