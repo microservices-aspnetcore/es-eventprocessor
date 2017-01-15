@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client;
 using StatlerWaldorfCorp.EventProcessor.Queues;
 using StatlerWaldorfCorp.EventProcessor.Queues.AMQP;
 using Steeltoe.Extensions.Configuration;
@@ -37,7 +38,7 @@ namespace StatlerWaldorfCorp.EventProcessor
             services.Configure<CloudFoundryServicesOptions>(Configuration);            
 
             services.Configure<QueueOptions>(Configuration.GetSection("QueueOptions"));
-
+            services.AddTransient(typeof(IConnectionFactory), typeof(AMQPConnectionFactory));
             services.AddSingleton(typeof(IEventEmitter), typeof(AMQPEventEmitter));            
         }
 
