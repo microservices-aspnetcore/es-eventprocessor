@@ -94,7 +94,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Tests.Events
             internalStorage = new Dictionary<Guid, List<MemberLocation>>();
         }
 
-        public ICollection<MemberLocation> GetMemberLocations(Guid teamId)
+        public IList<MemberLocation> GetMemberLocations(Guid teamId)
         {
             if (!internalStorage.ContainsKey(teamId)) {
                 internalStorage[teamId] = new List<MemberLocation>();

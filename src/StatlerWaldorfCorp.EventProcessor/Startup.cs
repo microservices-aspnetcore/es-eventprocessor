@@ -13,6 +13,8 @@ using StatlerWaldorfCorp.EventProcessor.Queues.AMQP;
 using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.CloudFoundry.Connector.Redis;
+using Steeltoe.CloudFoundry.Connector.Services;
+using StackExchange.Redis;
 
 namespace StatlerWaldorfCorp.EventProcessor
 {
@@ -41,13 +43,13 @@ namespace StatlerWaldorfCorp.EventProcessor
 
             services.Configure<CloudFoundryApplicationOptions>(Configuration);
             services.Configure<CloudFoundryServicesOptions>(Configuration);            
-
-            services.AddDistributedRedisCache(Configuration);
-            services.AddRedisConnectionMultiplexer(Configuration);
+            
+            services.AddRedisConnectionMultiplexer(Configuration);                    
 
             services.Configure<QueueOptions>(Configuration.GetSection("QueueOptions"));
             services.AddTransient(typeof(IConnectionFactory), typeof(AMQPConnectionFactory));
             services.AddTransient(typeof(EventingBasicConsumer), typeof(AMQPEventingConsumer));
+                        
             services.AddTransient(typeof(ILocationCache), typeof(RedisLocationCache));
 
             services.AddSingleton(typeof(IEventSubscriber), typeof(AMQPEventSubscriber));            
@@ -55,11 +57,14 @@ namespace StatlerWaldorfCorp.EventProcessor
             services.AddSingleton(typeof(IEventProcessor), typeof(MemberLocationEventProcessor));
         }
 
+        // Singletons are lazy instantiation.. so if we don't ask for an instance during startup,
+        // they'll never get used.
         public void Configure(IApplicationBuilder app, 
                 IHostingEnvironment env, 
                 ILoggerFactory loggerFactory,
                 IEventSubscriber subscriber,
-                IEventEmitter eventEmitter) 
+                IEventEmitter eventEmitter,
+                IEventProcessor eventProcessor) 
         {                                   
             app.UseMvc();
 
