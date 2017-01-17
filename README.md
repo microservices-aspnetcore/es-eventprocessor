@@ -1,3 +1,5 @@
+[![wercker status](https://app.wercker.com/status/675802ec89254d5ba1ace8fae4261688/m/master "wercker status")](https://app.wercker.com/project/byKey/675802ec89254d5ba1ace8fae4261688)
+
 # Event Processor
 In an event sourcing model, an event processor service often has no restful endpoints. It is responsible for handling one or more inbound streams of events, performing some processing as a result of those events, and recording the events in the event store. The processing of inbound events usually results in the emission of other outbound events.
 
