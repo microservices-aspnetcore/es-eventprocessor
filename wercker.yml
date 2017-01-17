@@ -1,4 +1,5 @@
 box: microsoft/dotnet:1.1.0-sdk-msbuild
+no-response-timeout: 10
 build:
   steps: 
     - script:
