@@ -1,0 +1,64 @@
+box: microsoft/dotnet:1.1.0-sdk-msbuild
+build:
+  steps: 
+    - script:
+        name: restore
+        cwd: src/StatlerWaldorfCorp.EventProcessor
+        code: |
+          dotnet restore
+    - script:
+        name: build
+        cwd: src/StatlerWaldorfCorp.EventProcessor
+        code: |
+          dotnet build  
+    - script:
+        name: test-restore
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests
+        code: |
+           dotnet restore
+    - script:
+        name: test-build
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests
+        code: |
+          dotnet build
+    - script:
+        name: test-run
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests
+        code: |
+          dotnet test
+# Packaging...
+
+    - script:
+        name: publish
+        cwd: src/StatlerWaldorfCorp.EventProcessor
+        code: |
+          dotnet publish -o publish  
+    - script:
+        name: copy binary
+        cwd: src/StatlerWaldorfCorp.EventProcessor
+        code: |
+          cp -r . $WERCKER_OUTPUT_DIR/app 
+    - script:
+        name: copy entrypoint
+        code: |
+          cp docker_entrypoint.sh $WERCKER_OUTPUT_DIR/app
+          ls $WERCKER_OUTPUT_DIR/app
+    - script:
+        name: copy config
+        cwd: src/StatlerWaldorfCorp.EventProcessor
+        code: |
+          cp appsettings*json $WERCKER_OUTPUT_DIR/app/publish
+          mkdir -p $WERCKER_OUTPUT_DIR/app/publish/app/tmp       
+             
+integration:
+    steps:
+        - script:
+            name: integration-restore
+            cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
+            code: |
+                dotnet restore
+        - script:
+            name: integration-build
+            cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
+            code: |
+                dotnet build

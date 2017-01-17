@@ -4,3 +4,4 @@ project.lock.json
 bin
 obj
 .vscode/
+.wercker/
