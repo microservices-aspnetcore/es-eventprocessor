@@ -61,14 +61,12 @@ namespace StatlerWaldorfCorp.EventProcessor
         // they'll never get used.
         public void Configure(IApplicationBuilder app, 
                 IHostingEnvironment env, 
-                ILoggerFactory loggerFactory,
-                IEventSubscriber subscriber,
-                IEventEmitter eventEmitter,
+                ILoggerFactory loggerFactory,              
                 IEventProcessor eventProcessor) 
         {                                   
             app.UseMvc();
 
-            subscriber.Subscribe();
+            eventProcessor.Start();
         }
     }
 }
