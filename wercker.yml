@@ -1,5 +1,13 @@
 box: microsoft/dotnet:1.1.0-sdk-msbuild
 no-response-timeout: 10
+services:
+    - name: rediscache
+      id: redis:3.2.6
+      cmd: redis-server
+    - name: rabbitmq
+      id: rabbitmq:3.6.6
+
+
 build:
   steps: 
     - script:
@@ -49,17 +57,22 @@ build:
         cwd: src/StatlerWaldorfCorp.EventProcessor
         code: |
           cp appsettings*json $WERCKER_OUTPUT_DIR/app/publish
-          mkdir -p $WERCKER_OUTPUT_DIR/app/publish/app/tmp       
-             
-integration:
-    steps:
-        - script:
-            name: integration-restore
-            cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
-            code: |
-                dotnet restore
-        - script:
-            name: integration-build
-            cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
-            code: |
-                dotnet build
+          mkdir -p $WERCKER_OUTPUT_DIR/app/publish/app/tmp                    
+    - script:
+        name: integration-restore
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
+        code: |
+            dotnet restore
+    - script:
+        name: integration-build
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
+        code: |                        
+            dotnet build
+    - script:
+        name: integration-run
+        cwd: test/StatlerWaldorfCorp.EventProcessor.Tests.Integration
+        code: |            
+            export RABBIT_URL=amqp://$RABBITMQ_PORT_5672_TCP_ADDR:5672
+            export vcap__services__rediscloud__0__credentials__hostname=$REDISCACHE_PORT_6379_TCP_ADDR
+            export vcap__services__rabbitmq__0__credentials__uri=$RABBIT_URL
+            dotnet test             

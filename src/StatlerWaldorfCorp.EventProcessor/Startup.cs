@@ -50,7 +50,7 @@ namespace StatlerWaldorfCorp.EventProcessor
             services.AddTransient(typeof(IConnectionFactory), typeof(AMQPConnectionFactory));
             services.AddTransient(typeof(EventingBasicConsumer), typeof(AMQPEventingConsumer));
                         
-            services.AddTransient(typeof(ILocationCache), typeof(RedisLocationCache));
+            services.AddSingleton(typeof(ILocationCache), typeof(RedisLocationCache));
 
             services.AddSingleton(typeof(IEventSubscriber), typeof(AMQPEventSubscriber));            
             services.AddSingleton(typeof(IEventEmitter), typeof(AMQPEventEmitter));            
