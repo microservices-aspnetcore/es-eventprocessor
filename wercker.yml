@@ -75,4 +75,14 @@ build:
             export RABBIT_URL=amqp://$RABBITMQ_PORT_5672_TCP_ADDR:5672
             export vcap__services__rediscloud__0__credentials__hostname=$REDISCACHE_PORT_6379_TCP_ADDR
             export vcap__services__rabbitmq__0__credentials__uri=$RABBIT_URL
-            dotnet test             
+            dotnet test    
+
+deploy:
+  steps:
+    - internal/docker-push:
+        cwd: $WERCKER_OUTPUT_DIR/app
+        username: $USERNAME
+        password: $PASSWORD
+        repository: dotnetcoreservices/es-eventprocessor
+        registry: https://registry.hub.docker.com
+        entrypoint: "/pipeline/source/app/docker_entrypoint.sh"                  
