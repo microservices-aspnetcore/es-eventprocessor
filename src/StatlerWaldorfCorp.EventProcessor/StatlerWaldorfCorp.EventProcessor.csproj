@@ -57,7 +57,7 @@
     </PackageReference>
     <PackageReference Include="Steeltoe.CloudFoundry.Connector.Redis">
       <Version>1.0.0-rc2</Version>
-    </PackageReference>
+    </PackageReference>    
   </ItemGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

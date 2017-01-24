@@ -8,8 +8,7 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues
     {
         void Subscribe();
         void Unsubscribe();
-
-        //void OnLocationRecordedEvent(MemberLocationRecordedEvent memberLocationRecordedEvent);
+        
         event MemberLocationRecordedEventReceivedDelegate MemberLocationRecordedEventReceived;
     }
 }
