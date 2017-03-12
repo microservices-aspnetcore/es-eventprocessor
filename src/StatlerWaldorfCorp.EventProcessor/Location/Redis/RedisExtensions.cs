@@ -21,7 +21,8 @@ namespace StatlerWaldorfCorp.EventProcessor.Location.Redis
             }
 
             var redisConfig = config.GetSection("redis:configstring").Value;
-            services.AddSingleton(typeof(IConnectionMultiplexer), ConnectionMultiplexer.Connect(redisConfig));
+
+            services.AddSingleton(typeof(IConnectionMultiplexer), ConnectionMultiplexer.ConnectAsync(redisConfig).Result);
             return services;
         }
     }
