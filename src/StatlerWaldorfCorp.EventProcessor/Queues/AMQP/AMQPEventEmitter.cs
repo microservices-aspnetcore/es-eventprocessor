@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StatlerWaldorfCorp.EventProcessor.Events;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using RabbitMQ.Client;
 using System.Text;
 
@@ -11,26 +10,28 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
     public class AMQPEventEmitter : IEventEmitter
     {
         private ILogger<AMQPEventEmitter> logger;
-       
+
         private IConnectionFactory connectionFactory;
 
         private QueueOptions queueOptions;
-        
-        public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,            
+
+        public AMQPEventEmitter(ILogger<AMQPEventEmitter> logger,
             IOptions<QueueOptions> queueOptions,
-            IConnectionFactory connectionFactory) 
-        {         
+            IConnectionFactory connectionFactory)
+        {
             this.logger = logger;
-            this.connectionFactory = connectionFactory;                        
+            this.connectionFactory = connectionFactory;
             this.queueOptions = queueOptions.Value;
 
-            logger.LogInformation($"Emitting events on queue {this.queueOptions.ProximityDetectedEventQueueName}");            
+            logger.LogInformation($"Emitting events on queue {this.queueOptions.ProximityDetectedEventQueueName}");
         }
 
         public void EmitProximityDetectedEvent(ProximityDetectedEvent proximityDetectedEvent)
         {
-             using (IConnection conn = connectionFactory.CreateConnection()) {
-                using (IModel channel = conn.CreateModel()) {
+            using (IConnection conn = connectionFactory.CreateConnection())
+            {
+                using (IModel channel = conn.CreateModel())
+                {
                     channel.QueueDeclare(
                         queue: queueOptions.ProximityDetectedEventQueueName,
                         durable: false,
@@ -49,6 +50,6 @@ namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
                     logger.LogInformation($"Emitted proximity event of {jsonPayload.Length} bytes to queue.");
                 }
             }
-        }      
+        }
     }
 }

@@ -10,60 +10,54 @@ using StatlerWaldorfCorp.EventProcessor.Location;
 using StatlerWaldorfCorp.EventProcessor.Location.Redis;
 using StatlerWaldorfCorp.EventProcessor.Queues;
 using StatlerWaldorfCorp.EventProcessor.Queues.AMQP;
-using Steeltoe.Extensions.Configuration;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
-using Steeltoe.CloudFoundry.Connector.Redis;
-using Steeltoe.CloudFoundry.Connector.Services;
-using StackExchange.Redis;
+using StatlerWaldorfCorp.EventProcessor.Models;
 
 namespace StatlerWaldorfCorp.EventProcessor
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory) 
+        public Startup(IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole();
             loggerFactory.AddDebug();
-            
-            var builder = new ConfigurationBuilder()                
+
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: false)
-		        .AddEnvironmentVariables()		    
-                .AddCloudFoundry();
+                .AddEnvironmentVariables();
 
-	        Configuration = builder.Build();    		        
+            Configuration = builder.Build();
         }
 
         public IConfigurationRoot Configuration { get; }
 
-        public void ConfigureServices(IServiceCollection services) 
+        public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
             services.AddOptions();
 
-            services.Configure<CloudFoundryApplicationOptions>(Configuration);
-            services.Configure<CloudFoundryServicesOptions>(Configuration);            
-            
-            services.AddRedisConnectionMultiplexer(Configuration);                    
-
             services.Configure<QueueOptions>(Configuration.GetSection("QueueOptions"));
+            services.Configure<AMQPOptions>(Configuration.GetSection("amqp"));
+
+            services.AddRedisConnectionMultiplexer(Configuration);
+
             services.AddTransient(typeof(IConnectionFactory), typeof(AMQPConnectionFactory));
             services.AddTransient(typeof(EventingBasicConsumer), typeof(AMQPEventingConsumer));
-                        
+
             services.AddSingleton(typeof(ILocationCache), typeof(RedisLocationCache));
 
-            services.AddSingleton(typeof(IEventSubscriber), typeof(AMQPEventSubscriber));            
-            services.AddSingleton(typeof(IEventEmitter), typeof(AMQPEventEmitter));            
+            services.AddSingleton(typeof(IEventSubscriber), typeof(AMQPEventSubscriber));
+            services.AddSingleton(typeof(IEventEmitter), typeof(AMQPEventEmitter));
             services.AddSingleton(typeof(IEventProcessor), typeof(MemberLocationEventProcessor));
         }
 
         // Singletons are lazy instantiation.. so if we don't ask for an instance during startup,
         // they'll never get used.
-        public void Configure(IApplicationBuilder app, 
-                IHostingEnvironment env, 
-                ILoggerFactory loggerFactory,              
-                IEventProcessor eventProcessor) 
-        {                                   
+        public void Configure(IApplicationBuilder app,
+                IHostingEnvironment env,
+                ILoggerFactory loggerFactory,
+                IEventProcessor eventProcessor)
+        {
             app.UseMvc();
 
             eventProcessor.Start();

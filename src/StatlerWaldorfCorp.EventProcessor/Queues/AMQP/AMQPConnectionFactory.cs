@@ -1,28 +1,28 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System.Linq;
 using Microsoft.Extensions.Logging;
+using StatlerWaldorfCorp.EventProcessor.Models;
 
 namespace StatlerWaldorfCorp.EventProcessor.Queues.AMQP
 {
     public class AMQPConnectionFactory : ConnectionFactory
     {
-        protected Service rabbitServiceBinding;
+        protected AMQPOptions amqpOptions;
 
         public AMQPConnectionFactory(
             ILogger<AMQPConnectionFactory> logger,
-            IOptions<CloudFoundryServicesOptions> cfOptions) : base()
+            IOptions<AMQPOptions> serviceOptions) : base()
         {
-            this.rabbitServiceBinding = cfOptions.Value.Services.FirstOrDefault( s => s.Name == "rabbitmq");
+            this.amqpOptions = serviceOptions.Value;
 
-            this.UserName = rabbitServiceBinding.Credentials["username"].Value;
-            this.Password = rabbitServiceBinding.Credentials["password"].Value;
-            this.VirtualHost = rabbitServiceBinding.Credentials["vhost"].Value;
-            this.HostName = rabbitServiceBinding.Credentials["hostname"].Value;
-            this.Uri = rabbitServiceBinding.Credentials["uri"].Value;
+            this.UserName = amqpOptions.Username;
+            this.Password = amqpOptions.Password;
+            this.VirtualHost = amqpOptions.VirtualHost;
+            this.HostName = amqpOptions.HostName;
+            this.Uri = amqpOptions.Uri;
 
-            logger.LogInformation($"AMQP Connection configured for URI : {rabbitServiceBinding.Credentials["uri"].Value}");
+            logger.LogInformation($"AMQP Connection configured for URI : {amqpOptions.Uri}");
         }
     }
 }
